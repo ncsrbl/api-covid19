@@ -17,13 +17,17 @@ func main() {
 
 	//Em An�lise
 	var r = []string{"Positivo"}
-	SearchByResult(r, dataset)
+	pos := SearchByResult(r, dataset)
 	r = []string{"Em An�lise", ""}
 	var w = []string{"Fortaleza"}
 	SearchByMunicipios(w, SearchByObito(dataset))
 	fmt.Println("\n\n")
 
 	SearchByRegiaoDeSaude("JAGUARIBE", dataset)
+	fmt.Println("\n\n")
+	SearchByMunicipio("PALHANO", pos)
+	SearchByMunicipio("SALITRE", pos)
+	SearchByMunicipio("JUCAS", pos)
 	if err != nil {
 		panic(err)
 	}
@@ -100,7 +104,7 @@ func GetFileByURL(filepath string, fileURL string) ([][]string, error) {
 }
 
 //Search faz a pesquisa de acordo com as strings passadas
-func Search(resultadoExame []string, municipio []string, regiao string, area string) (res []string) {
+func Search(resultadoExame []string, municipio []string, regiao string, area string) (res [][]string) {
 
 	return res
 }
@@ -186,9 +190,77 @@ func SearchByRegiaoDeSaude(regiao string, dataset [][]string) (results [][]strin
 	return SearchByMunicipios(municipios, positivos)
 }
 
-func SearchByAreaDescentralizada(regiao string, dataset [][]string) (results [][]string) {
+//SearchByAreaDescentralizada Busca pela area
+func SearchByAreaDescentralizada(area string, dataset [][]string) (results [][]string) {
+	var municipios []string
+	if area == "REGIÃO FORTALEZA" {
+		municipios = []string{"FORTALEZA", "EUSEBIO", "AQUIRAZ", "ITAITINGA"}
+	}
+	if area == "REGIÃO CAUCAIA" {
+		municipios = []string{"CAUCAIA", "SAO GONCALO DO AMARANTE", "ITAPAJE", "PENTECOSTE", "PARACURU", "PARAIPABA", "TEJUCUOCA", "APUIARES", "SAO LUÍS DO CURU", "GENERAL SAMPAIO"}
+	}
+	if area == "REGIÃO MARACANAÚ" {
+		municipios = []string{"MARACANAU", "MARANGUAPE", "PACATUBA", "REDENCAO", "ACARAPE", "GUAIÚBA", "BARREIRA", "PALMACIA"}
+	}
+	if area == "REGIÃO BATURITÉ" {
+		municipios = []string{"ARACOIBA", "BATURITÉ", "CAPISTRANO", "PACOTI", "ITAPIUNA", "ARATUBA", "MULUNGU", "GUARAMIRANGA", ""}
+	}
+	if area == "REGIÃO CANIDÉ" {
+		municipios = []string{"CANINDE", "ITATIRA", "CARIDADE", "MADALENA", "BOA VIAGEM", "PARAMOTI"}
+	}
+	if area == "REGIÃO ITAPIPOCA" {
+		municipios = []string{"ITAPIPOCA", "AMONTADA", "URUBURETAMA", "TRAIRI", "MARAIMA", "TURURU", "UMIRIM", "", ""}
+	}
+	if area == "REGIÃO ARACATI" {
+		municipios = []string{"ARACATI", "ICAPUI", "ITAICABA", "FORTIM"}
+	}
+	if area == "REGIÃO QUIXADÁ" {
+		municipios = []string{"QUIXADA", "QUIXERAMOBIM", "IBICUITINGA", "BANABUIU", "CHORÓ", "SOLONOPOLE", "MILHA", "PEDRA BRANCA", "SENADOR POMPEU", ""}
+	}
+	if area == "REGIÃO RUSSAS" {
+		municipios = []string{"MORADA NOVA", "RUSSAS", "JUGUARUANA", "JAGUARETAMA", "PALHANO"}
+	}
+	if area == "REGIÃO LIMOEIRO DO NORTE" {
+		municipios = []string{"LIMOEIRO DO NORTE", "TABULEIRO DO NORTE", "JAGUARIBE", "QUIXERE", "JAGUARIBARA", "SAO JOAO DO JAGUARIBE", "ALTO SANTO", "ERERE", "IRACEMA", "PEREIRO", "POTIRETAMA"}
+	}
+	if area == "REGIÃO SOBRAL" {
+		municipios = []string{"SOBRAL", "MASSAPE", "SANTA QUITERIA", "COREAU", "CARIRE", "GROAIRAS", "ALCANTARAS", "MERUOCA", "MORAUJO", "URUOCA", "SANTANA DO ACARAU", "SENADOR SA", "VARJOTA", "MUCAMBO", "IPU", "IRAUCUBA", "GRACA", "FRECHEIRINHA", "FORQUILHA", "CATUNDA", "RERIUTABA", "HIDROLANDIA", "PACUJA", "PIRES FERREIRA"}
+	}
+	if area == "REGIÃO ACARAÚ" {
+		municipios = []string{"ACARAU", "ITAREMA", "BELA CRUZ", "CRUZ", "MORRINHOS", "JIJOCA DE JERICOACOARA", "MARCO"}
+	}
+	if area == "REGIÃO TINGUÁ" {
+		municipios = []string{"TIANGUA", "VICOSA DO CEARA", "UBAJARA", "SAO BENEDITO", "GUARACIABA DO NORTE", "IBIAPINA", "CARNAUBAL", "CROATA"}
+	}
+	if area == "REGIÃO TAUÁ" {
+		municipios = []string{"TAUA", "PARAMBU", "ARNEIROZ", "AIUABA"}
+	}
+	if area == "REGIÃO CRETEÚS" {
+		municipios = []string{"CRATEUS", "IPUEIRAS", "NOVA RUSSAS", "TAMBORIL", "MONSENHOR TABOSA", "IPAPORANGA", "INDEPENDENCIA", "QUITERIANOPOLIS", "NOVO ORIENTE", "PORANGA", "ARARENDA"}
+	}
+	if area == "REGIÃO COMOCIM" {
+		municipios = []string{"CAMOCIM", "GRANJA", "BARROQUINHA", "CHAVAL", "MARTINOPOLE", ""}
+	}
+	if area == "REGIÃO ICÓ" {
+		municipios = []string{"ICO", "OROS", "UMARI", "CEDRO", "LAVRAS DA MAGABEIRA", "IPAUMIRIM", "BAIXIO"}
+	}
+	if area == "REGIÃO IGUATÚ" {
+		municipios = []string{"IGUATU", "MOMBACA", "ACOPIARA", "QUIXELO", "CARIUS", "JUCAS", "CATARINA", "SABOEIRO", "PIQUET CARNEIRO", "DEPUTADO IRAPUAN PINHEIRO"}
+	}
+	if area == "REGIÃO BREJO SANTO" {
+		municipios = []string{"MAURITI", "BREJO SANTO", "MILAGRES", "BARRO", "AURORA", "PORTEIRAS", "ABAIARA", "JATI", "PENAFORTE"}
+	}
+	if area == "REGIÃO CRATO" {
+		municipios = []string{"CRATO", "VARZEA ALEGRE", "CAMPOS SALES", "FARIAS BRITO", "ASSARE", "SANTANA DO CARIRI", "POTENGI", "ARARIPE", "SALITRE", "TARRAFAS", "NOVA OLINDA", "ANTONINA DO NORTE", "ALTANEIRA"}
+	}
+	if area == "REGIÃO JUAZEIRO DO NORTE" {
+		municipios = []string{"JUAZEIRO DO NORTE", "BARBALHA", "MISSAO VELHA", "CARIRIACU", "JARDIM"}
+	}
+	if area == "REGIÃO CASCAVEL" {
+		municipios = []string{"CASCAVEL", "HORIZONTE", "PACAJUS", "BEBERIBE", "CHOROZINHO", "PINDORETAMA", "OCARA"}
+	}
 
-	return results
+	return SearchByMunicipios(municipios, dataset)
 }
 
 //SearchByMunicipios busca pelo resultado do exame
@@ -213,6 +285,10 @@ func SearchByMunicipio(municipio string, dataset [][]string) (results [][]string
 	for _, row := range dataset {
 		if strings.ToUpper(row[29]) == strings.ToUpper(municipio) {
 			results = append(results, row)
+			fmt.Printf("%v %s %s %s %s\n", row[3], row[29], row[30], row[32], row[33])
+			if len(results)%10 == 0 {
+				fmt.Println()
+			}
 		}
 
 	}
