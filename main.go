@@ -3,7 +3,9 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strings"
 )
 
@@ -11,12 +13,12 @@ func main() {
 
 	url := "https://indicadores.integrasus.saude.ce.gov.br/api/casos-coronavirus/export-csv"
 
-	dataset, err := GetCSV(url)
+	dataset, err := GetFileByURL("covid.csv", url)
 
 	var r = []string{"Positivo", "Negativo"}
 	SearchByResult(r, dataset)
 	r = []string{"Positivo"}
-	var w = []string{"Fortaleza"}
+	var w = []string{"Iguatu"}
 	SearchByMunicipio(w, SearchByResult(r, dataset))
 	if err != nil {
 		panic(err)
@@ -51,6 +53,48 @@ func GetCSV(url string) ([][]string, error) {
 	return data, nil
 }
 
+//GetFileByURL bla bla bla
+func GetFileByURL(filepath string, fileURL string) ([][]string, error) {
+	file, err := os.Open("covid.csv")
+
+	if err != nil {
+		resp, err := http.Get(fileURL)
+
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		out, err := os.Create(filepath)
+
+		if err != nil {
+			return nil, err
+		}
+		defer out.Close()
+		_, err = io.Copy(out, resp.Body)
+
+		reader := csv.NewReader(resp.Body)
+		reader.Comma = ','
+
+		dataset, err := reader.ReadAll()
+		if err != nil {
+			return nil, err
+		}
+		return dataset, err
+	}
+
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.Comma = ','
+
+	dataset, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+	return dataset, err
+}
+
 //Search faz a pesquisa de acordo com as strings passadas
 func Search(resultadoExame []string, municipio []string, regiao string, area string) (res []string) {
 
@@ -81,6 +125,7 @@ func SearchByMunicipio(municipios []string, dataset [][]string) (results [][]str
 			}
 		}
 	}
+	//fmt.Printf("%s\n", results)
 	fmt.Printf("Found %d results\n", len(results))
 
 	return results
