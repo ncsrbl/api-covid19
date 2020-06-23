@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"bufio"
 	"encoding/csv"
 	"fmt"
 	"net/http"
@@ -12,27 +11,20 @@ func main() {
 
 	url := "https://indicadores.integrasus.saude.ce.gov.br/api/casos-coronavirus/export-csv"
 
-	data, err := GetCSV(url)
+	dataset, err := GetCSV(url)
 
+	var r = []string{"Positivo", "Negativo"}
+	SearchByResult(r, dataset)
+	r = []string{"Positivo"}
+	var w = []string{"Fortaleza"}
+	SearchByMunicipio(w, SearchByResult(r, dataset))
 	if err != nil {
 		panic(err)
 	}
 
-	Search(data, "Positivo")
-	//Search(data, "Morada Nova", "Positivo")
-
-	for col, _ := range data {
-		if col == 0 {
-			//continue
-		}
-		if col == 10 {
-			break
-		}
-		//fmt.Println(row)
-	}
-
 }
 
+//GetCSV Pega o csv da url
 func GetCSV(url string) ([][]string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -42,6 +34,13 @@ func GetCSV(url string) ([][]string, error) {
 	defer resp.Body.Close()
 
 	reader := csv.NewReader(resp.Body)
+	fmt.Printf("Data -> %s\n", resp.Header.Get("Date"))
+	date := resp.Header.Get("Date")
+	split := strings.Split(string(date), " ")
+	for i := range split {
+		fmt.Printf("%s -- ", split[i])
+	}
+	fmt.Printf("\n")
 	reader.Comma = ','
 
 	data, err := reader.ReadAll()
@@ -52,30 +51,39 @@ func GetCSV(url string) ([][]string, error) {
 	return data, nil
 }
 
-func Search(data [][]string, filtros ...string) []string {
-	var bairros []string
-	numFilters := len(filtros)
-	fmt.Printf("Seaching for %s\n", filtros)
-	n := 0
-	for _, row := range data {
-		n = 0
-		for i := range row {
-			for j := range filtros {
-				if i == 32 {
-					//fmt.Printf("%s %s %t\n", row[i], filtros[j], row[i] == strings.ToUpper(filtros[j]))
-				}
-				if strings.ToUpper(row[i]) == strings.ToUpper(filtros[j]) {
-					//fmt.Printf("%s %s => ", row[0], filtros[j])
-					n += 1
-				}
+//Search faz a pesquisa de acordo com as strings passadas
+func Search(resultadoExame []string, municipio []string, regiao string, area string) (res []string) {
+
+	return res
+}
+
+//SearchByResult busca pelo resultado do exame
+func SearchByResult(resultadoExame []string, dataset [][]string) (results [][]string) {
+	fmt.Printf("Searching for %s\n\t", resultadoExame)
+	for _, row := range dataset {
+		for i := range resultadoExame {
+			if row[32] == resultadoExame[i] {
+				results = append(results, row)
 			}
 		}
-		if n == numFilters {
-			//fmt.Printf("\t%s %s %s\n", row[0], row[32], row[33])
-			bairros = append(bairros, row[32])
-		}
-
 	}
-	fmt.Printf("Found %d results...\n", len(bairros))
-	return bairros
+	fmt.Printf("Found %d results\n", len(results))
+	return results
 }
+
+//SearchByMunicipio busca pelo resultado do exame
+func SearchByMunicipio(municipios []string, dataset [][]string) (results [][]string) {
+	fmt.Printf("Searching for %s\n\t", municipios)
+	for _, row := range dataset {
+		for i := range municipios {
+			if strings.ToUpper(row[29]) == strings.ToUpper(municipios[i]) {
+				results = append(results, row)
+			}
+		}
+	}
+	fmt.Printf("Found %d results\n", len(results))
+
+	return results
+}
+
+// var regiaoCariri = string[] {"",}
