@@ -16,18 +16,12 @@ func main() {
 	dataset, err := GetFileByURL("covid.csv", url)
 
 	//Em An�lise
-	var r = []string{"Positivo"}
-	pos := SearchByResult(r, dataset)
-	r = []string{"Em An�lise", ""}
-	var w = []string{"Fortaleza"}
-	SearchByMunicipios(w, SearchByObito(dataset))
-	fmt.Println("\n\n")
+	var resultado = []string{"Positivo"}
+	var municipios = []string{"PALHANO", "MORADA NOVA"}
+	var regiao = ""
+	var area = ""
+	Search(resultado, municipios, regiao, area, dataset)
 
-	SearchByRegiaoDeSaude("JAGUARIBE", dataset)
-	fmt.Println("\n\n")
-	SearchByMunicipio("PALHANO", pos)
-	SearchByMunicipio("SALITRE", pos)
-	SearchByMunicipio("JUCAS", pos)
 	if err != nil {
 		panic(err)
 	}
@@ -104,8 +98,29 @@ func GetFileByURL(filepath string, fileURL string) ([][]string, error) {
 }
 
 //Search faz a pesquisa de acordo com as strings passadas
-func Search(resultadoExame []string, municipio []string, regiao string, area string) (res [][]string) {
+func Search(resultadoExame []string, municipio []string, regiao string, area string, dataset [][]string) (res [][]string) {
+	var r [][]string
+	if len(resultadoExame) > 0 {
+		r = SearchByResult(resultadoExame, dataset)
+		res = r
+	}
+	if len(res) == 0 {
+		r = dataset
+	} else {
+		r = res
+	}
+	//fmt.Printf("Len> %d - %d\n", len(res), len(r))
+	if len(municipio) > 0 {
+		res = SearchByMunicipios(municipio, r)
+	}
 
+	if area != "" && regiao == "" {
+		res = SearchByAreaDescentralizada(area, r)
+	} else if area == "" && regiao != "" {
+		res = SearchByRegiaoDeSaude(regiao, r)
+	} else if area != "" && regiao != "" {
+
+	}
 	return res
 }
 
